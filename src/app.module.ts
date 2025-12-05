@@ -13,12 +13,13 @@ import databaseConfig from './configuration/database.config';
 import jwtConfig from './configuration/jwt.config';
 import ocrConfig from './configuration/ocr.config';
 import aiConfig from './configuration/ai.config';
+import * as fs from 'fs';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal:true,
-      load:[
+      isGlobal: true,
+      load: [
         databaseConfig,
         jwtConfig,
         ocrConfig,
@@ -26,28 +27,27 @@ import aiConfig from './configuration/ai.config';
       ]
     }),
     TypeOrmModule.forRootAsync({
-      imports :[ConfigModule],
-      inject :[ConfigService],
+      imports: [ConfigModule],
+      inject: [ConfigService],
 
-      useFactory: (config:ConfigService) => ({
-        type : 'postgres',
-        host : config.get('DB_HOST'),
-        port : config.get('DB_PORT'),
-        username : config.get('DB_USER'),
-        password : config.get('DB_PASSWORD'),
-        database : config.get('DB_NAME'),
-        entity : [UserEntity],
-        synchronize: true,
-        keepConnectionAlive: true,
-        autoLoadEntities : true,
-        logging: true,
-        ssl: config.get('database.ssl'),
-        extra : config.get('database.ssl')? {
-            ssl: {
-              rejectUnauthorized : false
-            }
-        } : null,
-      })
+      useFactory: (config: ConfigService) => {
+       
+        return {
+          type: 'postgres',
+          host: config.get('DB_HOST'),
+          port: config.get('DB_PORT'),
+          username: config.get('DB_USER'),
+          password: config.get('DB_PASSWORD'),
+          database: config.get('DB_NAME'),
+          entity: [UserEntity],
+          synchronize: true,
+          keepConnectionAlive: true,
+          autoLoadEntities: true,
+          logging: true,
+          ssl: { ca: fs.readFileSync('certs/aiven-ca.pem').toString(), }
+
+        }
+      }
     }),
     UsersModule,
     AuthModule,
@@ -56,7 +56,7 @@ import aiConfig from './configuration/ai.config';
     AiModule,
   ],
   providers: [],
-  
+
 })
 
-export class AppModule{}
+export class AppModule { }
