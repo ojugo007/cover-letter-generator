@@ -41,6 +41,8 @@ export class UsersService {
             bio: user.bio,
             address: user.address,
             phone: user.phone,
+            linkedin_url: user.linkedin_url,
+            personal_url: user.personal_url,
             role: user.role,
             created_at: user.created_at
         }

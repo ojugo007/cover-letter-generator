@@ -35,6 +35,12 @@ export class UserEntity {
     @Column({type:'varchar', length: 20, nullable: true})
     phone: string
 
+    @Column({type:'varchar', length: 255, nullable: true})
+    linkedin_url: string
+
+    @Column({type:'varchar', length: 255, nullable: true})
+    personal_url: string
+
     @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
     role: string;
 

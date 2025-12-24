@@ -11,6 +11,8 @@ export interface UserData {
     skills: string[];
     years_of_exp: number;
     work_exp: string;
+    linkedin_url: string;
+    personal_url: string;
 }
 
 @Injectable()
@@ -50,6 +52,8 @@ export class AiService {
         - Skills: ${JSON.stringify(userData.skills)}
         - Years of experience: ${userData.years_of_exp}
         - Work experience summary: "${userData.work_exp}"
+        - Linkedin url: "${userData.linkedin_url}"
+        - Relevant professional link showcasing the user’s work (e.g., portfolio, GitHub profile, project demos, or personal website): "${userData.personal_url}"
 
         3. From the job description, extract:
         - **Company name** (if present)
