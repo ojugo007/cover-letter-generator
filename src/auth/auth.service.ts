@@ -15,8 +15,7 @@ export class AuthService {
 
     async createUser(signupDto : SignupDto){
       const user = await this.usersService.createUser(signupDto)
-      const token = this.jwtService.sign({id: user.id, email:user.email})
-        console.log(token)
+      const token = this.jwtService.sign({id: user.id, email:user.email, fullname:user.fullname})
        return {
         message : "Account successfully created",
             data :{ 
@@ -39,7 +38,7 @@ export class AuthService {
             throw new BadRequestException("password don't match")
         }
 
-        const token = this.jwtService.sign({email:user.email, id: user.id})
+        const token = this.jwtService.sign({email:user.email, id:user.id, fullname:user.fullname})
 
         return {
             message : "login successfully",
