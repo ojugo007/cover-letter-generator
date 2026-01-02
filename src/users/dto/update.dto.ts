@@ -44,22 +44,21 @@ export class UpdateUserDto {
   @MaxLength(20)
   phone?: string;
 
-@ApiPropertyOptional({
-  description: 'User LinkedIn profile URL',
-  example: 'https://www.linkedin.com/in/johndoe'
-})
+  @ApiPropertyOptional({
+    description: 'User LinkedIn profile URL',
+    example: 'https://www.linkedin.com/in/johndoe'
+  })
+  @IsOptional()
+  @IsUrl({ require_protocol: true })
+  @MaxLength(255)
+  linkedin_url?: string
 
-@IsOptional()
-@IsUrl({ require_protocol: true })
-@MaxLength(255)
-linkedin_url?: string
-
-@ApiPropertyOptional({
-  description: 'User personal website URL',
-  example: 'https://johndoe.dev'
-})
-@IsOptional()
-@IsUrl({ require_protocol: true })
-@MaxLength(255)
-personal_url?: string
+  @ApiPropertyOptional({
+    description: 'User personal website URL',
+    example: 'https://johndoe.dev'
+  })
+  @IsOptional()
+  @IsUrl({ require_protocol: true })
+  @MaxLength(255)
+  personal_url?: string
 }

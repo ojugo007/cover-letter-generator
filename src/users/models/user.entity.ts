@@ -44,6 +44,10 @@ export class UserEntity {
     @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
     role: string;
 
+    @Column({ default: false })
+    profileCompleted: boolean;
+
+
     @CreateDateColumn({type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date
 

@@ -44,6 +44,7 @@ export class UsersService {
             linkedin_url: user.linkedin_url,
             personal_url: user.personal_url,
             role: user.role,
+            profileCompleted: user.profileCompleted,
             created_at: user.created_at
         }
     }
@@ -66,6 +67,10 @@ export class UsersService {
     async UpdateProfile(id: string, data: Partial<UserEntity>) {
         const user = await this.findById(id)
         Object.assign(user, data)
+        if(user.bio && user.work_exp && user.address && Array.isArray(user.skills) && user.skills.length > 0){
+            user.profileCompleted = true
+        }
+
         return this.repo.save(user)
     }
 }
