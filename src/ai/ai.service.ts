@@ -1,42 +1,47 @@
-import { Injectable } from '@nestjs/common';
-import { GoogleGenAI } from "@google/genai"
-import { ConfigService } from '@nestjs/config';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { OpenRouter } from '@openrouter/sdk';
 
 export interface UserData {
-    fullname: string;
-    email: string;
-    bio: string;
-    address: string;
-    phone: string;
-    skills: string[];
-    years_of_exp: number;
-    work_exp: string;
-    linkedin_url: string;
-    personal_url: string;
+  fullname: string;
+  email: string;
+  bio: string;
+  address: string;
+  phone: string;
+  skills: string[];
+  years_of_exp: number;
+  work_exp: string;
+  linkedin_url: string;
+  personal_url: string;
 }
 
 @Injectable()
 export class AiService {
-    private readonly geminiApiKey: string;
-    private readonly ai: GoogleGenAI;
+  private readonly openRouter: OpenRouter;
 
-    constructor(private readonly configService: ConfigService) {
-        this.geminiApiKey = this.configService.get<string>('ai.geminiApiKey')!;
-
-        if (!this.geminiApiKey) {
-            throw new Error('Gemini API key is missing.');
-        }
-
-        this.ai = new GoogleGenAI({ apiKey: this.geminiApiKey });
+  constructor() {
+    if (!process.env.OPENROUTER_API_KEY) {
+      throw new Error('OPENROUTER_API_KEY is not set');
     }
 
-    async generateCoverLetter({
-        userData,
-        jobDescription,
-    }: {
-        userData: UserData;
-        jobDescription: string;
-    }) {
+    this.openRouter = new OpenRouter({
+        apiKey: process.env.OPENROUTER_API_KEY,
+    });
+  }
+
+  async generateCoverLetter({
+    userData,
+    jobDescription,
+  }: {
+    userData: UserData;
+    jobDescription: string;
+  }) {
+    
+    const date = new Date()
+    const formattedDate = new Intl.DateTimeFormat('en-US', {
+        month : 'short',
+        day: 'numeric',
+        year: 'numeric',
+    }).format(date)
 
     const prompt = `
         You are generating a polished, human-like, ATS-friendly cover letter.
@@ -46,6 +51,7 @@ export class AiService {
         2. Insert the userData DIRECTLY into the letter:
         - Full name: "${userData.fullname}"
         - Email: "${userData.email}"
+        - Date: "${formattedDate}
         - Bio: "${userData.bio}"
         - Phone: "${userData.phone}"
         - Address: "${userData.address}"
@@ -64,7 +70,7 @@ export class AiService {
         5. The cover letter must:
         - Start with Applicant full name, followed by the role they're applying for from the job description.
         - Contact information (email, phone, address) of applicant if present in the user data, should come next
-        - Always add current date
+        - Always add the date and exactly in the format provided above
         - Include company name if available
         - Be fully written with natural language
         - Reference user's real experience and skills
@@ -81,16 +87,25 @@ export class AiService {
         Now generate the final cover letter. Only output the letter — no explanations, no notes.
         `;
 
-        const response = await this.ai.models.generateContentStream({
-            model: "gemini-2.0-flash",
-            contents: prompt,
-        });
+    try {
+      const completion = await this.openRouter.chat.send({
+        model: 'mistralai/mistral-7b-instruct:free',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+      });
 
-        let text = "";
-        for await (const chunk of response) {
-            text += chunk.text;
-        }
+      const content = completion.choices?.[0]?.message?.content;
 
-        return text;
+      if (!content) {
+        throw new Error('Empty response from OpenRouter');
+      }
+
+      return content;
+
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to generate cover letter',
+      );
     }
+  }
 }

@@ -31,6 +31,8 @@ export class OcrService {
 
     const text = data?.ParsedResults?.[0]?.ParsedText ?? '';
     console.log(textCleanup(text))
+    console.log("testing if text was extracted : ", text)
+    console.log("extract text ran ")
     return textCleanup(text);
   }
 }
