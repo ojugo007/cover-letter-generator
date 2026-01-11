@@ -97,7 +97,7 @@ export class AiService {
         4. If NO address/location is found, **omit the address entirely**, do NOT create placeholders.
 
         5. CRITICAL FORMATTING RULES:
-        - Must be text and Markdown
+        - Must be HTML and not Markdown format
         - Do NOT indent any line
         - Do NOT add leading spaces or tabs
         - Each line must start at column 0
@@ -105,6 +105,7 @@ export class AiService {
 
         5. The cover letter must:
         - Must not be in Markdown format and not contain any atom or element of markdown
+        - Must be HTML and properly structured so it appears in proper cover letter structure
         - Start with Applicant full name, followed by the role they're applying for from the job description.
         - Contact information (email, phone, address) of applicant if present in the user data, should come next
         - Always add the date and exactly in the format provided above
