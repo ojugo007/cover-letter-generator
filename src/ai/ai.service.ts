@@ -73,10 +73,16 @@ export class AiService {
         }
 
         const prompt = `
-        You are generating a polished, human-like, ATS-friendly cover letter.
-
+        Generate a professional cover letter in valid HTML.
+        
         ### RULES (follow strictly):
         1. **Do not use any placeholders** like [Your Name],[Company Name] [Company Address], etc.
+        - Return content as HTML using <p> for paragraphs.
+        - Do NOT use markdown.
+        - Do NOT return plain text.
+        - Use <strong> for names and titles
+        - Do NOT use plain line breaks
+        - Output only HTML
         2. Insert the userData DIRECTLY into the letter:
         - Full name: "${userData.fullname}"
         - Email: "${userData.email}"
