@@ -134,7 +134,9 @@ export class AiService {
         // ${JSON.stringify(userData)}
         try {
             const completion = await this.openRouter.chat.send({
-                model: 'mistralai/mistral-7b-instruct:free',
+                // model: 'mistralai/mistral-7b-instruct:free',
+                // model: 'mistralai/devstral-2512:free',
+                model: 'z-ai/glm-4.5-air:free',
                 messages: [{ role: 'user', content: prompt }],
                 temperature: 0.7,
             });
@@ -148,6 +150,7 @@ export class AiService {
             return rawContent;
 
         } catch (error) {
+            console.log(error.message)
             throw new InternalServerErrorException(
                 'Failed to generate cover letter',
             );
