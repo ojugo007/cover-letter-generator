@@ -43,35 +43,11 @@ export class AiService {
             year: 'numeric',
         }).format(date)
 
-
-        function normalizeMarkdown(text: string) {
-            return text
-                .replace(/\t/g, '')
-                .replace(/^ {2,}/gm, '') // remove leading spaces
-                .replace(/\r\n/g, '\n')
-                .replace(/\n{3,}/g, '\n\n')
-                .trim();
+        function CapitalizeName(name:string) {
+            const names = name.split(" ")
+            return names[0][0].toUpperCase() + names[0].slice(1) + " " + names[1][0].toUpperCase() + names[1].slice(1)
         }
-
-        function extractTextContent(
-            content:
-                | string
-                | {
-                    type: string;
-                    text?: string;
-                }[],
-        ): string {
-            if (typeof content === 'string') {
-                return content;
-            }
-
-            // Handle array-based content
-            return content
-                .filter(item => item.type === 'text' && typeof item.text === 'string')
-                .map(item => item.text)
-                .join('\n');
-        }
-
+        const fullname = CapitalizeName(userData.fullname)
         const prompt = `
         Generate a professional cover letter in valid HTML.
         
@@ -84,7 +60,7 @@ export class AiService {
         - Do NOT use plain line breaks
         - Output only HTML
         2. Insert the userData DIRECTLY into the letter:
-        - Full name: "${userData.fullname}"
+        - Full name: "${fullname}"
         - Email: "${userData.email}"
         - Date: "${formattedDate}
         - Bio: "${userData.bio}"

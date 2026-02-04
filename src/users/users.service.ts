@@ -2,10 +2,14 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { UserEntity } from './models/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectRepository(UserEntity) private readonly repo: Repository<UserEntity>) { }
+    constructor( 
+        @InjectRepository(UserEntity) private readonly repo: Repository<UserEntity>,
+        private readonly jwtService : JwtService
+    ){}
 
     async findByEmail(email: string) {
         if (!email) {
@@ -70,7 +74,14 @@ export class UsersService {
         if(user.bio && user.work_exp && user.address && Array.isArray(user.skills) && user.skills.length > 0){
             user.profileCompleted = true
         }
+        
+        const updatedUser = await this.repo.save(user)
+        const token = this.jwtService.sign({email:updatedUser.email, id:updatedUser.id, fullname:updatedUser.fullname, profileCompleted: updatedUser.profileCompleted})
 
-        return this.repo.save(user)
+        return{
+            message: "Profile successfully updated",
+            data: { ...updatedUser},
+            token 
+        }
     }
 }
