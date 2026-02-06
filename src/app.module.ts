@@ -14,9 +14,19 @@ import jwtConfig from './configuration/jwt.config';
 import ocrConfig from './configuration/ocr.config';
 import aiConfig from './configuration/ai.config';
 import * as fs from 'fs';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
@@ -55,7 +65,12 @@ import * as fs from 'fs';
     ProcessingModule,
     AiModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    }
+  ],
 
 })
 

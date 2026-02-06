@@ -4,6 +4,7 @@ import { SignupDto } from 'src/auth/dto/signup.dto';
 import { UpdateUserDto } from './dto/update.dto';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('User')
 @Controller('user')
@@ -31,6 +32,7 @@ export class UsersController {
 
     @UseGuards(JwtAuthGuard)
     @Patch('update-profile')
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Update authenticated user profile' })
     @ApiResponse({

@@ -4,6 +4,7 @@ import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { OcrService } from 'src/processing/ocr.service';
 import { ProcessingService } from 'src/processing/processing.service';
 import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 
 
 @ApiTags('Upload & Cover Letter')
@@ -16,6 +17,7 @@ export class UploadController {
     ) { }
 
     @Post("")
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(FileInterceptor('file'))
     @ApiBearerAuth()
